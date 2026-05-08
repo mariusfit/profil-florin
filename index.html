@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Andrei-Mihai Popescu — Founding Partner, Lumen Advisory</title>
+
+<!-- PP Editorial New (Pangram, via Fontshare) -->
+<link rel="preconnect" href="https://api.fontshare.com" />
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=pp-editorial-new@400,500,600,700&display=swap" />
+<!-- Söhne is licensed; substitute with Manrope (Google Fonts) per spec fallback -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" />
+
+<!-- Tailwind CDN core utilities only -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  :root {
+    --bg-primary: #0A1628;
+    --bg-secondary: #0F1F35;
+    --bg-elevated: #14253F;
+    --glass-fill: rgba(255,255,255,0.04);
+    --glass-border: rgba(255,255,255,0.08);
+    --glass-border-hi: rgba(232,199,122,0.18);
+    --aurora-1: #6B8FFF;
+    --aurora-2: #9B6BFF;
+    --aurora-3: #4FB8D9;
+    --text-primary: #F5F1E8;
+    --text-secondary: #C8CFDC;
+    --text-muted: #A8B2C8;
+    --accent-primary: #E8C77A;
+    --accent-primary-hv: #F2D696;
+    --divider: rgba(232,199,122,0.16);
+    --shadow-glass: 0 1px 0 0 rgba(255,255,255,0.06) inset, 0 24px 48px -16px rgba(0,0,0,0.55);
+    --shadow-glow: 0 0 64px -16px rgba(107,143,255,0.22);
+    --shadow-photo: 0 32px 64px -24px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.10), inset 0 0 32px rgba(107,143,255,0.10);
+    --font-display: "PP Editorial New", "Editorial Old", Georgia, "Times New Roman", serif;
+    --font-body: "Manrope", -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+  }
+
+  html, body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-feature-settings: "ss01", "kern";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection { background: rgba(232,199,122,0.28); color: var(--text-primary); }
+
+  .font-display { font-family: var(--font-display); font-feature-settings: "liga","dlig"; }
+  .font-body { font-family: var(--font-body); }
+  .font-mono { font-family: var(--font-mono); }
+
+  /* Editorial heading tracking */
+  .h-display { letter-spacing: -0.025em; line-height: 0.96; }
+  .h-section { letter-spacing: -0.02em; line-height: 1.04; }
+  .label-mono { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.12em; font-size: 11px; }
+  .meta-mono { font-family: var(--font-mono); letter-spacing: 0.04em; font-size: 12px; text-transform: uppercase; }
+
+  /* Aurora drift — slow, ≤14% opacity, behind everything */
+  .aurora {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    will-change: transform;
+    opacity: 0.12;
+  }
+  @keyframes drift-a {
+    0%   { transform: translate3d(0,0,0); }
+    50%  { transform: translate3d(60px,-40px,0); }
+    100% { transform: translate3d(0,0,0); }
+  }
+  @keyframes drift-b {
+    0%   { transform: translate3d(0,0,0); }
+    50%  { transform: translate3d(-50px,40px,0); }
+    100% { transform: translate3d(0,0,0); }
+  }
+  .drift-a { animation: drift-a 40s linear infinite; }
+  .drift-b { animation: drift-b 52s linear infinite; }
+
+  /* Glass surface */
+  .glass {
+    background: var(--glass-fill);
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-glass);
+  }
+  .glass-hi:hover { border-color: var(--glass-border-hi); }
+
+  /* Reveal — IntersectionObserver toggles .is-in */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 800ms cubic-bezier(0.16,1,0.3,1), transform 800ms cubic-bezier(0.16,1,0.3,1); }
+  .reveal.is-in { opacity: 1; transform: none; }
+  .reveal.delay-1 { transition-delay: 100ms; }
+  .reveal.delay-2 { transition-delay: 200ms; }
+  .reveal.delay-3 { transition-delay: 300ms; }
+  .reveal.delay-4 { transition-delay: 400ms; }
+  .reveal.delay-5 { transition-delay: 500ms; }
+
+  /* Hero load stagger (separate from scroll reveals so they fire on mount) */
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: none; }
+  }
+  .rise { opacity: 0; animation: rise 800ms cubic-bezier(0.16,1,0.3,1) forwards; }
+  .rise-0 { animation-delay: 0ms; }
+  .rise-1 { animation-delay: 100ms; }
+  .rise-2 { animation-delay: 200ms; }
+  .rise-3 { animation-delay: 300ms; }
+  .rise-4 { animation-delay: 400ms; }
+  .rise-5 { animation-delay: 500ms; }
+
+  /* Grain overlay */
+  .grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 70;
+    mix-blend-mode: overlay;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* Hairline section dividers */
+  .hairline { height: 1px; background: var(--divider); }
+
+  /* Drop cap */
+  .dropcap::first-letter {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 80px;
+    line-height: 0.85;
+    color: var(--accent-primary);
+    float: left;
+    padding: 6px 12px 0 0;
+  }
+
+  /* Inputs */
+  .field {
+    background: var(--glass-fill);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    color: var(--text-primary);
+    padding: 14px 14px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    width: 100%;
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+  }
+  .field::placeholder { color: rgba(168,178,200,0.5); }
+  .field:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 0 3px rgba(232,199,122,0.18); }
+
+  /* Gold pill (4px radius — never full) */
+  .btn-gold {
+    background: var(--accent-primary);
+    color: #0A1628;
+    border-radius: 4px;
+    padding: 14px 22px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.005em;
+    display: inline-flex; align-items: center; gap: 10px;
+    transition: background 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.25) inset, 0 8px 24px -10px rgba(232,199,122,0.45);
+    cursor: pointer;
+    border: 0;
+  }
+  .btn-gold:hover { background: var(--accent-primary-hv); transform: translateY(-1px); }
+  .btn-ghost {
+    color: var(--text-primary);
+    border: 1px solid var(--glass-border);
+    background: transparent;
+    border-radius: 4px;
+    padding: 13px 22px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 15px;
+    display: inline-flex; align-items: center; gap: 10px;
+    transition: border-color 200ms ease, color 200ms ease;
+    cursor: pointer;
+  }
+  .btn-ghost:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+
+  /* Portrait */
+  .portrait-frame {
+    border-radius: 4px;
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    box-shadow: var(--shadow-photo);
+    transition: transform 200ms ease, box-shadow 200ms ease;
+  }
+  .portrait-frame:hover { transform: scale(1.01); box-shadow: 0 32px 64px -24px rgba(0,0,0,0.6), 0 0 0 1px rgba(232,199,122,0.55), inset 0 0 32px rgba(107,143,255,0.10); }
+
+  /* Bio left rule */
+  .bio-rule { box-shadow: -1px 0 0 0 rgba(232,199,122,0.4); }
+
+  /* Pull quote left rule */
+  .quote-rule { border-left: 2px solid var(--accent-primary); padding-left: 24px; }
+
+  /* Service hover edge */
+  .svc { transition: border-color 220ms ease, box-shadow 280ms ease, background 220ms ease; }
+  .svc:hover { border-color: var(--glass-border-hi); box-shadow: var(--shadow-glow), var(--shadow-glass); }
+
+  /* Portfolio row */
+  .pf-row { transition: background 220ms ease, box-shadow 220ms ease; position: relative; }
+  .pf-row::before {
+    content: "";
+    position: absolute; left: 0; top: 8px; bottom: 8px;
+    width: 0; background: var(--accent-primary);
+    transition: width 240ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .pf-row:hover::before { width: 4px; }
+  .pf-row:hover { background: linear-gradient(90deg, rgba(107,143,255,0.06), transparent 60%); }
+
+  /* Stat tile */
+  .stat-num { font-family: var(--font-mono); color: var(--accent-primary); font-weight: 500; line-height: 1; letter-spacing: -0.02em; }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .rise, .reveal { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; }
+    .drift-a, .drift-b { animation: none !important; }
+    .portrait-frame:hover { transform: none; }
+  }
+
+  /* No-emoji policy: lucide-style inline SVGs only */
+</style>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+
+<body class="bg-[#0A1628] text-[#F5F1E8]">
+  <div id="root"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <script type="text/babel" src="icons.jsx"></script>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel">
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "portraitUrl": "assets/portrait.jpeg",
+      "portraitTone": "neutral"
+    }/*EDITMODE-END*/;
+    window.TWEAK_DEFAULTS = TWEAK_DEFAULTS;
+  </script>
+  <script type="text/babel" src="profile.jsx"></script>
+  <script type="text/babel">
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<BusinessPartnerProfile />);
+  </script>
+</body>
+</html>
