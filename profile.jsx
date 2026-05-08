@@ -996,14 +996,14 @@ const LanguageSwitcher = ({ value, onChange, variant = "inline", dropDirection =
   }
 
   return (
-    <div ref={ref} className="relative md:hidden">
+    <div ref={ref} className="relative md:hidden w-full max-w-full">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
         className={
-          "flex items-center gap-1.5 label-mono px-2.5 py-1.5 rounded-[4px] border text-[color:var(--text-primary)] transition-colors " +
+          "w-full max-w-full flex items-center justify-center gap-1.5 label-mono px-2 py-1.5 rounded-[4px] border text-[color:var(--text-primary)] transition-colors whitespace-nowrap " +
           (open
             ? "border-[color:var(--accent-primary)] bg-[rgba(10,22,40,0.92)]"
             : "border-[color:var(--glass-border)] bg-[rgba(10,22,40,0.74)] hover:border-[color:var(--accent-primary)]")
@@ -1018,7 +1018,7 @@ const LanguageSwitcher = ({ value, onChange, variant = "inline", dropDirection =
       {open && (
         <ul
           role="listbox"
-          className={"absolute right-0 z-[80] min-w-[188px] rounded-[6px] py-1.5 border " + (dropDirection === "up" ? "bottom-[calc(100%+8px)]" : "top-[calc(100%+8px)]")}
+          className={"absolute right-0 z-[80] w-[172px] max-w-[calc(100vw-24px)] rounded-[6px] py-1.5 border overflow-hidden " + (dropDirection === "up" ? "bottom-[calc(100%+8px)]" : "top-[calc(100%+8px)]")}
           style={{
             background: "rgba(8,18,34,0.96)",
             borderColor: "rgba(232,199,122,0.34)",
@@ -1210,14 +1210,14 @@ const Services = ({ copy }) => {
             return (
               <div
                 key={s.n + s.title}
-                className={"reveal delay-" + Math.min(i + 1, 5) + " glass svc rounded-[8px] p-6 lg:p-10 grid grid-cols-12 gap-6 items-start relative"}
+                className={"reveal delay-" + Math.min(i + 1, 5) + " glass svc rounded-[8px] p-6 lg:p-10 grid grid-cols-12 gap-6 items-start relative overflow-hidden min-w-0"}
               >
                 <div className="col-span-12 lg:col-span-2">
                   <div className="font-display text-[60px] lg:text-[72px] leading-none text-[color:var(--accent-primary)]">{s.n}</div>
                 </div>
-                <div className="col-span-12 lg:col-span-8">
+                <div className="col-span-12 lg:col-span-8 min-w-0">
                   <h3 className="font-display text-[24px] lg:text-[28px] leading-tight">{s.title}</h3>
-                  <p className="mt-4 text-[16px] lg:text-[17px] leading-[1.65] text-[color:var(--text-secondary)] max-w-[640px]">
+                  <p className="mt-4 text-[16px] lg:text-[17px] leading-[1.65] text-[color:var(--text-secondary)] max-w-[640px] break-words">
                     {s.body}
                   </p>
                 </div>
@@ -1255,12 +1255,12 @@ const Portfolio = ({ copy }) =>
         </div>
 
         {copy.portfolio.rows.map((p, i) =>
-          <div key={i} className="pf-row grid grid-cols-12 gap-6 py-7 border-b border-[color:var(--divider)] pl-4">
+          <div key={i} className="pf-row grid grid-cols-12 gap-6 py-7 border-b border-[color:var(--divider)] pl-4 min-w-0">
             <div className="col-span-12 lg:col-span-1 meta-mono text-[color:var(--text-muted)] pt-2">{p.year}</div>
-            <div className="col-span-12 lg:col-span-4">
+            <div className="col-span-12 lg:col-span-4 min-w-0">
               <div className="font-display text-[24px] lg:text-[28px] leading-tight">{p.client}</div>
             </div>
-            <div className="col-span-12 lg:col-span-5 text-[16px] leading-[1.6] text-[color:var(--text-secondary)] pt-1">
+            <div className="col-span-12 lg:col-span-5 text-[16px] leading-[1.6] text-[color:var(--text-secondary)] pt-1 break-words min-w-0">
               {p.outcome}
             </div>
             <div className="col-span-12 lg:col-span-2 lg:text-right">
@@ -1285,16 +1285,20 @@ const Stats = ({ copy }) =>
       <div className="reveal mb-12">
         <SectionLabel index="04" name={copy.stats.sectionName} />
       </div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-[color:var(--divider)] rounded-[8px] overflow-hidden border border-[color:var(--divider)]">
-        {copy.stats.items.map((s, i) =>
-          <div key={i} className={"reveal delay-" + Math.min(i + 1, 5) + " glass rounded-none p-8 lg:p-10 flex flex-col gap-4 min-h-[200px] lg:min-h-[260px] justify-between"}>
-            <div className="flex items-baseline gap-2">
-              <span className="stat-num text-[44px] lg:text-[60px]">{s.num}</span>
-              {s.suffix && <span className="font-mono text-[14px] text-[color:var(--text-muted)]">{s.suffix}</span>}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-[color:var(--divider)] rounded-[8px] overflow-hidden border border-[color:var(--divider)] min-w-0">
+        {copy.stats.items.map((s, i) => {
+          const val = String(s.num);
+          const isWide = /[A-Za-z]/.test(val) || val.length > 3;
+          return (
+            <div key={i} className={"reveal delay-" + Math.min(i + 1, 5) + " glass rounded-none p-8 lg:p-10 flex flex-col gap-4 min-h-[200px] lg:min-h-[260px] justify-between min-w-0"}>
+              <div className="flex items-baseline gap-2 min-w-0">
+                <span className={"stat-num leading-none break-words " + (isWide ? "text-[34px] sm:text-[40px] lg:text-[56px]" : "text-[44px] lg:text-[60px]")}>{s.num}</span>
+                {s.suffix && <span className="font-mono text-[14px] text-[color:var(--text-muted)]">{s.suffix}</span>}
+              </div>
+              <div className="meta-mono text-[color:var(--text-muted)] break-words">{s.label}</div>
             </div>
-            <div className="meta-mono text-[color:var(--text-muted)]">{s.label}</div>
-          </div>
-        )}
+          );
+        })}
       </div>
     </div>
   </section>;
@@ -1392,19 +1396,19 @@ const Contact = ({ copy }) => {
 
             <div className="glass rounded-[8px] p-8 space-y-4">
               <div className="meta-mono text-[color:var(--accent-primary)] mb-2">{copy.contact.direct.label}</div>
-              <a href={"mailto:" + copy.contact.direct.mail} className="flex items-center gap-3 font-mono text-[14px] hover:text-[color:var(--accent-primary)] transition-colors">
+              <a href={"mailto:" + copy.contact.direct.mail} className="flex items-center gap-3 font-mono text-[14px] break-all hover:text-[color:var(--accent-primary)] transition-colors">
                 <IconMail size={16} stroke={1.6} /> {copy.contact.direct.mail}
               </a>
-              <a href={"tel:" + copy.contact.direct.phone.replace(/\s+/g, "")} className="flex items-center gap-3 font-mono text-[14px] hover:text-[color:var(--accent-primary)] transition-colors">
+              <a href={"tel:" + copy.contact.direct.phone.replace(/\s+/g, "")} className="flex items-center gap-3 font-mono text-[14px] break-all hover:text-[color:var(--accent-primary)] transition-colors">
                 <IconPhone size={16} stroke={1.6} /> {copy.contact.direct.phone}
               </a>
-              <a href="#" className="flex items-center gap-3 font-mono text-[14px] hover:text-[color:var(--accent-primary)] transition-colors">
+              <a href="#" className="flex items-center gap-3 font-mono text-[14px] break-all hover:text-[color:var(--accent-primary)] transition-colors">
                 <IconWhatsapp size={16} stroke={1.6} /> {copy.contact.direct.whatsapp}
               </a>
-              <a href={"https://" + copy.contact.direct.facebook} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 font-mono text-[14px] hover:text-[color:var(--accent-primary)] transition-colors">
+              <a href={"https://" + copy.contact.direct.facebook} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 font-mono text-[14px] break-all hover:text-[color:var(--accent-primary)] transition-colors">
                 <IconFacebook size={16} stroke={1.6} /> {copy.contact.direct.facebook}
               </a>
-              <a href={"https://" + copy.contact.direct.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 font-mono text-[14px] hover:text-[color:var(--accent-primary)] transition-colors">
+              <a href={"https://" + copy.contact.direct.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 font-mono text-[14px] break-all hover:text-[color:var(--accent-primary)] transition-colors">
                 <IconLinkedin size={16} stroke={1.6} /> {copy.contact.direct.linkedin}
               </a>
             </div>
@@ -1585,11 +1589,11 @@ const TaskItem = ({ href, sectionId, Icon, label, onNavigate }) => (
       e.preventDefault();
       onNavigate(sectionId);
     }}
-    className="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 text-[color:var(--text-muted)] hover:text-[color:var(--accent-primary)] active:text-[color:var(--accent-primary)] transition-colors"
+    className="flex-1 min-w-0 flex flex-col items-center justify-center gap-1 py-2.5 px-1 text-[color:var(--text-muted)] hover:text-[color:var(--accent-primary)] active:text-[color:var(--accent-primary)] transition-colors"
     style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
   >
     <Icon size={18} stroke={1.6} />
-    <span style={{ fontFamily: "var(--font-mono)", fontSize: 9.5, letterSpacing: "0.06em", textTransform: "uppercase" }}>{label}</span>
+    <span className="w-full text-center truncate" style={{ fontFamily: "var(--font-mono)", fontSize: 9.5, letterSpacing: "0.06em", textTransform: "uppercase" }}>{label}</span>
   </a>
 );
 
@@ -1661,7 +1665,7 @@ const SiteHeader = ({ lang, onLangChange, copy, onNavigate }) => {
         </div>
       </header>
 
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 px-5 h-[52px] flex items-center justify-between" style={mobileTopBg}>
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 px-5 h-[52px] w-full max-w-full overflow-hidden flex items-center justify-between" style={mobileTopBg}>
         <div className="flex items-center gap-2.5">
           <LumenMark size={18} />
           <span className="font-display text-[15px]">{copy.brand.name}</span>
@@ -1671,14 +1675,14 @@ const SiteHeader = ({ lang, onLangChange, copy, onNavigate }) => {
         </button>
       </div>
 
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40" style={mobileBottomBg} aria-label={copy.common.primaryNavAria}>
-        <ul className="grid grid-cols-5 items-stretch">
-          <li className="flex"><TaskItem href="#home" sectionId="home" Icon={IconContact} label={copy.taskbar.home} onNavigate={navigate} /></li>
-          <li className="flex"><TaskItem href="#bio" sectionId="bio" Icon={IconCompass} label={copy.taskbar.about} onNavigate={navigate} /></li>
-          <li className="flex"><TaskItem href="#portfolio" sectionId="portfolio" Icon={IconFileText} label={copy.taskbar.projects} onNavigate={navigate} /></li>
-          <li className="flex"><TaskItem href="#contact" sectionId="contact" Icon={IconMail} label={copy.taskbar.contact} onNavigate={navigate} /></li>
-          <li className="flex items-center justify-center">
-            <div className="flex flex-col items-center justify-center gap-1 py-1.5">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 w-full max-w-full overflow-hidden" style={mobileBottomBg} aria-label={copy.common.primaryNavAria}>
+        <ul className="grid grid-cols-5 items-stretch w-full min-w-0">
+          <li className="flex min-w-0"><TaskItem href="#home" sectionId="home" Icon={IconContact} label={copy.taskbar.home} onNavigate={navigate} /></li>
+          <li className="flex min-w-0"><TaskItem href="#bio" sectionId="bio" Icon={IconCompass} label={copy.taskbar.about} onNavigate={navigate} /></li>
+          <li className="flex min-w-0"><TaskItem href="#portfolio" sectionId="portfolio" Icon={IconFileText} label={copy.taskbar.projects} onNavigate={navigate} /></li>
+          <li className="flex min-w-0"><TaskItem href="#contact" sectionId="contact" Icon={IconMail} label={copy.taskbar.contact} onNavigate={navigate} /></li>
+          <li className="flex min-w-0 items-center justify-center">
+            <div className="w-full max-w-full flex flex-col items-center justify-center gap-1 py-1.5 px-1">
               <LanguageSwitcher value={lang} onChange={onLangChange} variant="compact" dropDirection="up" ariaLabel={copy.common.languageAria} />
             </div>
           </li>
@@ -1739,7 +1743,7 @@ const BusinessPartnerProfile = () => {
   }, [SCROLL_OFFSET.desktop, SCROLL_OFFSET.mobile]);
 
   return (
-    <main className="relative pt-[52px] md:pt-[68px] pb-[96px] md:pb-0" style={{ WebkitOverflowScrolling: "touch" }}>
+    <main className="relative w-full max-w-full overflow-x-hidden pt-[52px] md:pt-[68px] pb-[96px] md:pb-0" style={{ WebkitOverflowScrolling: "touch" }}>
       <SiteHeader lang={lang} onLangChange={setLang} copy={copy} onNavigate={scrollToSection} />
       <Hero portraitUrl={t.portraitUrl} portraitTone={t.portraitTone} copy={copy} />
       <Bio copy={copy} />
