@@ -1002,7 +1002,12 @@ const LanguageSwitcher = ({ value, onChange, variant = "inline", dropDirection =
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex items-center gap-1.5 label-mono px-2.5 py-1.5 rounded-[4px] border border-[color:var(--glass-border)] text-[color:var(--text-primary)] hover:border-[color:var(--accent-primary)] transition-colors"
+        className={
+          "flex items-center gap-1.5 label-mono px-2.5 py-1.5 rounded-[4px] border text-[color:var(--text-primary)] transition-colors " +
+          (open
+            ? "border-[color:var(--accent-primary)] bg-[rgba(10,22,40,0.92)]"
+            : "border-[color:var(--glass-border)] bg-[rgba(10,22,40,0.74)] hover:border-[color:var(--accent-primary)]")
+        }
       >
         <IconGlobe size={13} stroke={1.6} />
         {current.label}
@@ -1013,8 +1018,14 @@ const LanguageSwitcher = ({ value, onChange, variant = "inline", dropDirection =
       {open && (
         <ul
           role="listbox"
-          className={"absolute right-0 z-50 min-w-[160px] glass rounded-[4px] py-1.5 " + (dropDirection === "up" ? "bottom-[calc(100%+6px)]" : "top-[calc(100%+6px)]")}
-          style={{ boxShadow: "var(--shadow-glass)" }}
+          className={"absolute right-0 z-[80] min-w-[188px] rounded-[6px] py-1.5 border " + (dropDirection === "up" ? "bottom-[calc(100%+8px)]" : "top-[calc(100%+8px)]")}
+          style={{
+            background: "rgba(8,18,34,0.96)",
+            borderColor: "rgba(232,199,122,0.34)",
+            boxShadow: "0 16px 40px rgba(0,0,0,0.48), 0 0 0 1px rgba(255,255,255,0.04) inset",
+            backdropFilter: "blur(20px) saturate(140%)",
+            WebkitBackdropFilter: "blur(20px) saturate(140%)"
+          }}
         >
           {LANGUAGES.map((l) => (
             <li key={l.code}>
@@ -1024,14 +1035,26 @@ const LanguageSwitcher = ({ value, onChange, variant = "inline", dropDirection =
                 aria-selected={l.code === value}
                 onClick={() => { onChange(l.code); setOpen(false); }}
                 className={
-                  "w-full text-left px-3 py-2 flex items-center justify-between gap-4 label-mono transition-colors " +
+                  "w-full text-left px-3 py-2.5 flex items-center justify-between gap-4 label-mono transition-colors " +
                   (l.code === value
-                    ? "text-[color:var(--accent-primary)]"
-                    : "text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]")
+                    ? "text-[color:var(--accent-primary)] bg-[rgba(232,199,122,0.14)]"
+                    : "text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] hover:bg-[rgba(255,255,255,0.06)]")
                 }
               >
                 <span>{l.label}</span>
-                <span className="opacity-60 normal-case tracking-normal" style={{ fontFamily: "var(--font-body)", fontSize: 11, textTransform: "none", letterSpacing: 0 }}>{l.full}</span>
+                <span
+                  className="normal-case tracking-normal"
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    fontSize: 11,
+                    textTransform: "none",
+                    letterSpacing: 0,
+                    opacity: l.code === value ? 0.95 : 0.82,
+                    color: l.code === value ? "var(--text-primary)" : "var(--text-secondary)"
+                  }}
+                >
+                  {l.full}
+                </span>
               </button>
             </li>
           ))}
